@@ -60,6 +60,10 @@
 #include <ctype.h>
 #include <fcntl.h>
 
+#if TSAN_SUPPORT
+#include "dynamic_annotations.h"
+#endif
+
 /* ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------ */
 
@@ -1646,6 +1650,9 @@ __kmp_suspend_initialize( void )
 static void
 __kmp_suspend_initialize_thread( kmp_info_t *th )
 {
+#if TSAN_SUPPORT
+    ANNOTATE_HAPPENS_AFTER(&th->th.th_suspend_init_count);
+#endif    
     if ( th->th.th_suspend_init_count <= __kmp_fork_count ) {
         /* this means we haven't initialized the suspension pthread objects for this thread
            in this instance of the process */

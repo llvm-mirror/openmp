@@ -283,8 +283,18 @@ if(LIBOMP_OMPT_SUPPORT AND (NOT LIBOMP_HAVE_OMPT_SUPPORT))
   libomp_error_say("OpenMP Tools Interface requested but not available")
 endif()
 
+# TSAN-support
+set(LIBOMP_TSAN_SUPPORT FALSE CACHE BOOL
+  "TSAN-support?")
+
+set(LIBOMP_TSAN_NAME)
+if(${LIBOMP_TSAN_SUPPORT})
+  add_definitions(-D TSAN_SUPPORT=1 -D DYNAMIC_ANNOTATIONS_ENABLED=1)
+  set(LIBOMP_TSAN_NAME _tsan)
+endif()
+
 # Setting final library name
-set(LIBOMP_DEFAULT_LIB_NAME libomp)
+set(LIBOMP_DEFAULT_LIB_NAME libomp${LIBOMP_TSAN_NAME})
 if(${PROFILE_LIBRARY})
   set(LIBOMP_DEFAULT_LIB_NAME ${LIBOMP_DEFAULT_LIB_NAME}prof)
 endif()
@@ -321,6 +331,7 @@ if(${LIBOMP_STANDALONE_BUILD})
   endif()
   libomp_say("Use Adaptive locks   -- ${LIBOMP_USE_ADAPTIVE_LOCKS}")
   libomp_say("Use quad precision   -- ${LIBOMP_USE_QUAD_PRECISION}")
+  libomp_say("Use TSAN-support     -- ${LIBOMP_TSAN_SUPPORT}")
 endif()
 
 add_subdirectory(src)
